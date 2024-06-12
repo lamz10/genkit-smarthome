@@ -42,6 +42,36 @@ npm install
 npm run server
 ```
 
+## Deployment / Hosting
+
+Install caddy:
+
+https://caddyserver.com/docs/install  
+
+Setup caddy by editing /etc/caddy/Caddyfile 
+
+Add these lines to the end of the file 
+
+```
+smarthome.aaronblondeau.com { 
+  reverse_proxy localhost:3000
+}
+```
+
+Make sure .env file is in place and then launch the service with docker compose
+
+```
+docker compose up -d
+```
+
+Setup DNS records for smarthome.aaronblondeau.com (and wait a few)
+
+Then finally, reload caddy config
+
+```
+sudo caddy reload 
+```
+
 ## TODO
 
 Send current state (temp and light color context) to model so that commands like "make it 5 degrees warmer" can work.
