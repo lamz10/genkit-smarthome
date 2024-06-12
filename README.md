@@ -44,6 +44,8 @@ npm run server
 
 ## Deployment / Hosting
 
+Temporarily hosted at https://smarthome.aaronblondeau.com/
+
 Install caddy:
 
 https://caddyserver.com/docs/install  
