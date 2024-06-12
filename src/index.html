@@ -1,11 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>genkit-smarthome</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/picnic">
+  <script src="//unpkg.com/alpinejs" defer></script>
 </head>
+
 <body>
-    TODO - create the UI here
+  <article style="padding: 20px;">
+    <div x-data="smarthome">
+      <div>Temperature : <span x-text="temp"></span></div>
+      <div>Lights : <span x-text="color" :style="{ color: '#' + color }"></span></div>
+      <div>
+        <input type="text" x-model="command" placeholder='"Set the lights to green", or "Change the temperature to 80 degrees."'>
+        <button @click="execute" :disabled="working || command.length === 0">Make It So</button>
+      </div>
+      <div x-show="response.length > 0">
+        <div>Response : <span x-text="response"></span></div>
+      </div>
+    </div>
+  </article>
+
+  <script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('smarthome', () => ({
+            command: '',
+            response: '',
+            color: '',
+            temp: -1,
+            working: false,
+
+            init() {
+              working = true
+              fetch('/state').then((response) => {
+                return response.json()
+              }).then((json) => {
+                working = false
+                console.log(json)
+                this.temp = json.temp
+                this.color = json.color
+              })
+            },
+ 
+            execute() {
+              this.working = true
+              this.response = ''
+              fetch('/command', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  command: this.command
+                })
+              }).then((response) => {
+                return response.json()
+              }).then((json) => {
+                this.working = false
+                this.temp = json.temp
+                this.color = json.color
+                this.response = json.response
+              })
+            
+            }
+        }))       
+    })
+  </script>
+
 </body>
+
 </html>
