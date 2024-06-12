@@ -1,0 +1,128 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Genkit Smarthome API",
+    "description": "Use Genkit to manage the state of your smarthome.",
+    "version": "1.0.0"
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/state": {
+      "get": {
+        "tags": [
+          "State"
+        ],
+        "description": "",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "The current state of the home.",
+            "schema": {
+              "$ref": "#/definitions/State"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "State"
+        ],
+        "description": "Updates the current state of the home.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "color": {
+                  "type": "string",
+                  "example": "00FF00"
+                },
+                "temp": {
+                  "type": "number",
+                  "example": 77
+                }
+              },
+              "required": [
+                "color",
+                "temp"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/command": {
+      "post": {
+        "tags": [
+          "State"
+        ],
+        "description": "Processes a natural language input to update the current state of the home.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "command": {
+                  "type": "string",
+                  "example": "Change the lights to green please."
+                }
+              },
+              "required": [
+                "command"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "State": {
+      "type": "object",
+      "properties": {
+        "temp": {
+          "type": "number",
+          "example": 67
+        },
+        "color": {
+          "type": "string",
+          "example": "00FF00"
+        }
+      }
+    }
+  }
+}
