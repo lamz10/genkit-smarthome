@@ -17,8 +17,8 @@
       }
   
       .container {
-        height: 450px;
-        width: 400px;
+        height: 400px;
+        width: 300px;
         position: relative;
       }
   
@@ -28,7 +28,7 @@
   
       .house {
         top: 50%;
-        left: 75px;
+        left: 0px;
         height: 200px;
         width: 260px;
         background: #FFF;
@@ -121,7 +121,7 @@
 </head>
 
 <body>
-  <article style="padding: 20px;" x-data="smarthome">
+  <article x-data="smarthome">
     <!-- From https://codepen.io/kira-code/pen/JjXWxML -->
     <div class="container">
       <div class="house">
@@ -133,22 +133,23 @@
       </div>
     </div>
 
-    <div>
+    <div style="width: 300px; max-width: 90%;">
       <!-- <div>Temperature : <span x-text="temp"></span></div>
       <div>Lights : <span x-text="color" :style="{ color: '#' + color }"></span></div>-->
-      <div style="width: 400px; max-width: 100%;">
+      <div style="text-align: center;">
         I am an AI agent who can control the lights (seen in the window) or the thermostat (below the window) of this home. What can I do for you?
       </div>
-      <div>
+      <div style="text-align: center;">
         <input type="text" x-model="command" @keyup.enter="execute" placeholder='"Set the lights to green", or "Change the temperature to 80 degrees."'>
         <button @click="execute" :disabled="working || command.length === 0">Make It So</button>
       </div>
-      <div x-show="working">
+      <div style="text-align: center;" x-show="working">
         <div>Working on it...</div>
       </div>
-      <div x-show="response.length > 0" style="width: 400px; max-width: 100%;">
+      <div style="text-align: center;" x-show="response.length > 0">
         <div>Response : <span x-text="response"></span></div>
       </div>
+      <div style="text-align: center;">View the <a href="https://github.com/aaronblondeau/genkit-smarthome" target="_blank">code</a> or the <a href="https://aaronblondeau.com/posts/june_2024/genkit/" target="_blank">blog post</a> about this page.</div>
     </div>
   </article>
 

@@ -78,11 +78,9 @@ To update to new code:
 
 ```
 git pull origin main
-docker compose down
 docker compose up -d --no-deps --build genkit-smarthome
 ```
 
 ## TODO
 
-Send current state (temp and light color context) to model so that commands like "make it 5 degrees warmer" can work.
 Process audio commands directly in browser?
