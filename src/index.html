@@ -7,18 +7,143 @@
   <title>genkit-smarthome</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/picnic">
   <script src="//unpkg.com/alpinejs" defer></script>
+  <style>
+      body {
+        background: #ffdd59;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+  
+      .container {
+        height: 450px;
+        width: 400px;
+        position: relative;
+      }
+  
+      .container * {
+        position: absolute;
+      }
+  
+      .house {
+        top: 50%;
+        left: 75px;
+        height: 200px;
+        width: 260px;
+        background: #FFF;
+      }
+      .house::before {
+        content: '';
+        position: absolute;
+        top: -95px;
+        left: 33px;
+        height: 183px;
+        width: 183.5px;
+        background: white;
+        transform: rotate(45deg);
+        border-top: 10px solid blue;
+        border-left: 10px solid blue;
+        z-index: 2
+      }
+      .house::after {
+        content: '';
+        position: absolute;
+        top: -70px;
+        left: 15px;
+        height: 70px;
+        width: 30px;
+        background: blue;
+        z-index: 1;
+        border-top: 7px solid rgba(0, 0, 0, .3);
+      }
+      .window {
+        top: 35px;
+        left: 25px;
+        height: 80px;
+        width: 70px;
+        z-index: 3;
+        border-top: 7px solid blue;
+      }
+      .window::before,
+      .window::after {
+        content: '';
+        position: absolute;
+        background: silver;
+      }
+      .window::before {
+        top: 0;
+        left: 50%;
+        height: 100%;
+        width: 1px;
+      }
+      .window::after {
+        top: 50%;
+        height: 1px;
+        width: 100%;
+      }
+  
+      .door {
+        top: 70px;
+        left: 150px;
+        height: 130px;
+        width: 70px;
+        background: blue;
+        z-index: 3;
+      }
+      .door::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        height: 7px;
+        width: 7px;
+        border-radius: 50%;
+        border: 1px solid #FFF;
+        background: #96ebff;
+      }
+  
+      .flower {
+        bottom: 20px;
+        left: 30px;
+        height: 60px;
+        width: 60px;
+        background: lightgray;
+        z-index: 4;
+        border-radius: 30px 30px;
+        border-width: 1px;
+        border-color: black;
+        text-align: center;
+        padding-top: 15px;
+      }
+    </style>
+  </style>
 </head>
 
 <body>
-  <article style="padding: 20px;">
-    <div x-data="smarthome">
-      <div>Temperature : <span x-text="temp"></span></div>
-      <div>Lights : <span x-text="color" :style="{ color: '#' + color }"></span></div>
+  <article style="padding: 20px;" x-data="smarthome">
+    <!-- From https://codepen.io/kira-code/pen/JjXWxML -->
+    <div class="container">
+      <div class="house">
+        <div class="window" :style="{ background: '#' + color }"></div>
+        <div class="door"></div>
+        <div class="flower">
+          <span x-text="temp" style="position: relative;"></span>&deg;
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <!-- <div>Temperature : <span x-text="temp"></span></div>
+      <div>Lights : <span x-text="color" :style="{ color: '#' + color }"></span></div>-->
       <div>
-        <input type="text" x-model="command" placeholder='"Set the lights to green", or "Change the temperature to 80 degrees."'>
+        <input type="text" x-model="command" @keyup.enter="execute" placeholder='"Set the lights to green", or "Change the temperature to 80 degrees."'>
         <button @click="execute" :disabled="working || command.length === 0">Make It So</button>
       </div>
-      <div x-show="response.length > 0">
+      <div x-show="working">
+        <div>Working on it...</div>
+      </div>
+      <div x-show="response.length > 0" style="max-width: 400px;">
         <div>Response : <span x-text="response"></span></div>
       </div>
     </div>
