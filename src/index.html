@@ -158,20 +158,32 @@
         Alpine.data('smarthome', () => ({
             command: '',
             response: '',
-            color: '',
+            color: 'FFFFFF',
             temp: -1,
             working: false,
 
-            init() {
-              working = true
-              fetch('/state').then((response) => {
-                return response.json()
-              }).then((json) => {
-                working = false
-                console.log(json)
-                this.temp = json.temp
-                this.color = json.color
-              })
+            async init() {
+              // Use an SSE stream to keep the UI up to date
+              this.working = true
+              const response = await fetch('/stream')
+              this.working = false
+
+              if (!response.ok) {
+                throw Error(response.statusText)
+              }
+
+              for (const reader = response.body.getReader(); ; ) {
+                const {value, done} = await reader.read();
+
+                if (done) {
+                  break;
+                }
+
+                const chunk = new TextDecoder().decode(value);
+                const state = JSON.parse(chunk)
+                this.temp = state.temp
+                this.color = state.color
+              }
             },
  
             execute() {

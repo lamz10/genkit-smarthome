@@ -52,6 +52,29 @@ app.get('/state', async (req: Request, res: Response) => {
   res.json(homeActor.getSnapshot().context)
 })
 
+// SSE for realtime state updates
+app.get("/stream", (req, res) => {
+  // #swagger.ignore = true
+  res.writeHead(200, {
+    "Connection": "keep-alive",
+    "Cache-Control": "no-cache",
+    "Content-Type": "text/event-stream",
+  });
+
+  // Immediately send current state
+  res.write(`${JSON.stringify(homeActor.getSnapshot().context)}`)
+
+  // Send future state changes as they happen
+  const subscription = homeActor.subscribe((state) => {
+    res.write(`${JSON.stringify(homeActor.getSnapshot().context)}`)
+  })
+
+  res.on("close", () => {
+    res.end()
+    subscription.unsubscribe()
+  })
+})
+
 export const stateUpdateSchema = z.object({
   color: z.string().length(6).optional(),
   temp: z.number().min(0).max(100).optional()
