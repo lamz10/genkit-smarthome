@@ -1,6 +1,6 @@
 import 'dotenv/config'
-import express, { type Request, type Response } from 'express'
-import { z } from 'zod'
+import express, { NextFunction, type Request, type Response } from 'express'
+import { ZodError, z } from 'zod'
 import { homeActor } from './state'
 import { smartHomeFlow } from './smartHome'
 import { runFlow } from '@genkit-ai/flow'
@@ -99,6 +99,20 @@ app.post('/command', async (req: Request, res: Response) => {
   const input = commandSchema.parse(req.body)
   const response = await runFlow(smartHomeFlow, input.command)
   res.json({ response, ...homeActor.getSnapshot().context })
+})
+
+// Global error handler
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack)
+  if (err instanceof ZodError) {
+    const messages : Array<string> = []
+    for (const issue of err.issues) {
+      messages.push(issue.path.join(",") + ' - ' + issue.message)
+    }
+    res.status(500).json({ message: messages.join(', ') })
+  } else {
+    res.status(500).json({ message: err.toString() })
+  }
 })
 
 swaggerAutogen()(outputFile, ['./server.ts'], doc).then(() => {

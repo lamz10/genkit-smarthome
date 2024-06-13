@@ -108,15 +108,16 @@ export const extractColorFlow = defineFlow({
   name: 'extractColorFlow',
   // Always use objects for inputSchema, otherwise we get empty inputs from "toolRequests"
   inputSchema: z.object({
-    colorContext: z.string().describe('Text that refers to a color or any object that has a color.')
+    colorContext: z.string().describe('Text that refers to a color, any object that has a known color, or an adjustment to an existing color.')
   }),
   outputSchema: z.object({
     color: z.string()
   }),
 },
   async (input) => {
+    const currentState = homeActor.getSnapshot().context
     const llmResponse = await generate({
-      prompt: `What color is this text referring to? : ${input.colorContext}`,
+      prompt: `The current hex color code for the room lighting is ${currentState.color}. The following text may refer to an adjustment to the current color or a new discrete color. What color is this text referring to? : ${input.colorContext}`,
       model: geminiPro,
       config: standardConfig,
     });
@@ -128,7 +129,7 @@ export const extractColorFlow = defineFlow({
 export const extractColor = action(
   {
     name: 'extractColor',
-    description: 'Extracts what color the user wants. Uses the context of the conversation and any objects mentioned to pick a color.',
+    description: 'Extracts what color the user wants. Uses the context of the conversation and any objects mentioned to pick a color. Has access to the current room color and can make adjustments to it such as adjusting hue, tone, and brightness.',
     inputSchema: z.object({
       colorContext: z.string().describe('Text that refers to a color or any object that has a color.')
     }),

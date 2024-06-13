@@ -31,15 +31,16 @@ export const setThermostatFlow = defineFlow(
 export const extractTemperatureFlow = defineFlow({
   name: 'extractTemperatureFlow',
   inputSchema: z.object({
-    temperatureContext: z.string().describe('Text that refers to a number temperature or any object that has a temperature.')
+    temperatureContext: z.string().describe('Text that refers to a number temperature, any object that has a known temperature, or an adjustment to an existing temperature.')
   }),
   outputSchema: z.object({
     temperature: z.number().min(0).max(100)
   }),
 },
   async (input) => {
+    const currentState = homeActor.getSnapshot().context
     const llmResponse = await generate({
-      prompt: `What temperature number is this text referring to? : ${input.temperatureContext}`,
+      prompt: `The current temperature is ${currentState.temp}. The following text may refer to a discrete temperature or an adjustment to the current temperature. What temperature is the following text referring to? : ${input.temperatureContext}`,
       model: geminiPro,
       config: standardConfig,
     });
@@ -51,7 +52,7 @@ export const extractTemperatureFlow = defineFlow({
 const extractTemperature = action(
   {
     name: 'extractTemperature',
-    description: 'Extracts what temperature number the user wants. Uses the context of the conversation and any objects mentioned to pick a temperature for the thermostat.',
+    description: 'Extracts what temperature number the user wants. Uses the context of the conversation and any objects mentioned to pick a temperature for the thermostat. Has access to the current temperature and can make adjustments to it.',
     inputSchema: z.object({
       temperatureContext: z.string().describe('Text that refers to a number temperature or any object that has a temperature.')
     }),

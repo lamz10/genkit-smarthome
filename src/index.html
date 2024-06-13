@@ -136,6 +136,9 @@
     <div>
       <!-- <div>Temperature : <span x-text="temp"></span></div>
       <div>Lights : <span x-text="color" :style="{ color: '#' + color }"></span></div>-->
+      <div style="width: 400px; max-width: 100%;">
+        I am an AI agent who can control the lights (seen in the window) or the thermostat (below the window) of this home. What can I do for you?
+      </div>
       <div>
         <input type="text" x-model="command" @keyup.enter="execute" placeholder='"Set the lights to green", or "Change the temperature to 80 degrees."'>
         <button @click="execute" :disabled="working || command.length === 0">Make It So</button>
@@ -143,7 +146,7 @@
       <div x-show="working">
         <div>Working on it...</div>
       </div>
-      <div x-show="response.length > 0" style="max-width: 400px;">
+      <div x-show="response.length > 0" style="width: 400px; max-width: 100%;">
         <div>Response : <span x-text="response"></span></div>
       </div>
     </div>
@@ -188,10 +191,11 @@
                 this.temp = json.temp
                 this.color = json.color
                 this.response = json.response
+              }).catch((error) => {
+                this.response = error.toString()
               })
-            
             }
-        }))       
+        }))
     })
   </script>
 
